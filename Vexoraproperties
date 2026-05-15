@@ -1,1 +1,61 @@
+// projects/vexora-properties/index.js
 
+// ============================================
+// VEXORA PROPERTIES - DEFI LLAMA SDK ADAPTER
+// ============================================
+
+// VXP Token
+const VXP = '0x5Db20Cb546833c762992f65478745870d280B670'
+
+// PancakeSwap V3 Pair
+const VXP_WBNB_PAIR = '0x0eA2607bDcc9ccC12294F8D48E9B2f7abBF61BDB'
+
+// Wrapped BNB
+const WBNB = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+
+// ============================================
+// TVL FUNCTION
+// ============================================
+
+async function tvl(api) {
+
+  // VXP inside LP
+  const vxpBalance = await api.call({
+    abi: 'erc20:balanceOf',
+    target: VXP,
+    params: [VXP_WBNB_PAIR],
+  })
+
+  // WBNB inside LP
+  const wbnbBalance = await api.call({
+    abi: 'erc20:balanceOf',
+    target: WBNB,
+    params: [VXP_WBNB_PAIR],
+  })
+
+  // Add balances
+  api.add(VXP, vxpBalance)
+  api.add(WBNB, wbnbBalance)
+}
+
+// ============================================
+// EXPORTS
+// ============================================
+
+module.exports = {
+  timetravel: true,
+  misrepresentedTokens: false,
+
+  methodology:
+    'Counts liquidity in the VXP/WBNB PancakeSwap V3 pool.',
+
+  start: 44700000,
+
+  bsc: {
+    tvl,
+  },
+
+  hallmarks: [
+    [1746057600, 'Vexora Properties Launch'],
+  ],
+}
